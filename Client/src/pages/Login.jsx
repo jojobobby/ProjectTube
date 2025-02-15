@@ -19,8 +19,8 @@ const Login = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default, color: theme.palette.text.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
-      <Container maxWidth="sm" sx={{ textAlign: 'center', p: 2 }}>
+    <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default, color: theme.palette.text.primary, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', p: 2, pt: 8 }}>
+      <Container maxWidth="sm" sx={{ textAlign: 'center', p: 2, mt: 4 }}>
         <Typography variant="h4" gutterBottom>
           Login to ProjectTube
         </Typography>

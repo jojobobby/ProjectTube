@@ -28,8 +28,8 @@ function Home() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.default : '#0d1117', color: theme.palette.text.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
-      <Container maxWidth="md" sx={{ textAlign: 'center', p: 2 }}>
+    <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.default : '#0d1117', color: theme.palette.text.primary, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', p: 2, pt: 8 }}>
+      <Container maxWidth="md" sx={{ textAlign: 'center', p: 2, mt: 4 }}>
         {/* Application Title */}
         <CustomTypography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
           Edit Videos Together on a Single Quick Access Website
