@@ -1,13 +1,10 @@
 import React from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Box, Button } from '@mui/material';
-import { Brightness4, Brightness7 } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useColorMode } from '../ThemeProvider';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
   const theme = useTheme();
-  const colorMode = useColorMode();
 
   return (
     <AppBar position="static" sx={{ borderBottom: '0.75px solid #e0e0e0' }}>
@@ -24,9 +21,6 @@ const Header = () => {
           <Button component={Link} to="/login" color="inherit">
             Login
           </Button>
-          <IconButton onClick={colorMode.toggleColorMode} color="inherit">
-            {theme.palette.mode === 'dark' ? <Brightness7 sx={{ color: '#ffeb3b' }} /> : <Brightness4 sx={{ color: '#000000' }} />}
-          </IconButton>
         </Box>
       </Toolbar>
     </AppBar>

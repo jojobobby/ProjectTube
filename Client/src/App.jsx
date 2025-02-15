@@ -1,23 +1,30 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import React, { useState, useContext, createContext } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
-import VideoEditor from './pages/VideoEditor';
 import Login from './pages/Login';
+import VideoEditor from './pages/VideoEditor';
 import Header from './components/Header';
-import Notification from './components/Notification';
+import Footer from './components/Footer';
+import CustomThemeProvider from './ThemeProvider';
+
+const UserContext = createContext(null);
 
 const App = () => {
+  const [user, setUser] = useState(null);
+
   return (
-    <Router>
-      <Header />
-      <Notification />
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route path="/video-editor" component={VideoEditor} />
-        <Route path="/login" component={Login} />
-      </Switch>
-    </Router>
+    <CustomThemeProvider>
+      <UserContext.Provider value={{ user, setUser }}>
+        <Router>
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/video-editor" element={user ? <VideoEditor /> : <Navigate to="/login" />} />
+          </Routes>
+          <Footer />
+        </Router>
+      </UserContext.Provider>
+    </CustomThemeProvider>
   );
 };
-
-export default App;

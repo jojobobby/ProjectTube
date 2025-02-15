@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState, useContext } from 'react';
+import React, { createContext, useMemo, useContext } from 'react';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -9,17 +9,7 @@ const ColorModeContext = createContext({ toggleColorMode: () => {} });
 export const useColorMode = () => useContext(ColorModeContext);
 
 const CustomThemeProvider = ({ children }) => {
-  const [mode, setMode] = useState('dark'); // Default to dark mode
-
-  // Toggle between 'light' and 'dark'
-  const colorMode = useMemo(
-    () => ({
-      toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-      },
-    }),
-    []
-  );
+  const mode = 'dark'; // Permanently set to dark mode
 
   // Create MUI theme based on the current mode
   const theme = useMemo(
@@ -28,10 +18,17 @@ const CustomThemeProvider = ({ children }) => {
         palette: {
           mode,
           primary: {
-            main: mode === 'light' ? '#1976d2' : '#90caf9',
+            main: '#90caf9',
           },
           secondary: {
-            main: mode === 'light' ? '#dc004e' : '#f48fb1',
+            main: '#f48fb1',
+          },
+          background: {
+            default: '#0d1117', // GitHub dark mode background color
+            paper: '#161b22', // GitHub dark mode paper color
+          },
+          text: {
+            primary: '#c9d1d9', // GitHub dark mode text color
           },
         },
         transitions: {
@@ -49,11 +46,11 @@ const CustomThemeProvider = ({ children }) => {
           },
         },
       }),
-    [mode]
+    []
   );
 
   return (
-    <ColorModeContext.Provider value={colorMode}>
+    <ColorModeContext.Provider value={{ toggleColorMode: () => {} }}>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         {children}
