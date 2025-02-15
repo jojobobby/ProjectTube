@@ -31,6 +31,9 @@ const Header = () => {
               <Button component={Link} to="/video-editor" color="inherit">
                 Editor
               </Button>
+              <Button component={Link} to="/converter" color="inherit">
+                Converter
+              </Button>
               <Button onClick={handleLogout} color="inherit">
                 Logout
               </Button>

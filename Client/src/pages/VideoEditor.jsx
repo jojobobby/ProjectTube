@@ -70,7 +70,7 @@ const Trim = () => {
       canvas.height = media.videoHeight || 480;
 
       const stream = canvas.captureStream(30);
-      const options = { mimeType: 'video/webm; codecs=vp9' };
+      const options = { mimeType: 'video/mp4; codecs=vp9' };
       const mediaRecorder = new MediaRecorder(stream, options);
 
       mediaRecorder.ondataavailable = (e) => {
@@ -80,7 +80,7 @@ const Trim = () => {
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+        const blob = new Blob(recordedChunksRef.current, { type: 'video/mp4' });
         const newMediaUrl = URL.createObjectURL(blob);
         setTrimmedUrl(newMediaUrl);
         setIsProcessing(false);
@@ -136,9 +136,11 @@ const Trim = () => {
     <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default, color: theme.palette.text.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
       <Container maxWidth="md" sx={{ textAlign: 'center', p: 2 }}>
         <Typography variant="h4" gutterBottom>
-          Media Uploader & Editor (Using Canvas & MediaRecorder)
+          Media Editor (Mp4 Only)
         </Typography>
-        <input type="file" accept="video/mp4" onChange={handleFileChange} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4 }}>
+          <input type="file" accept="video/mp4" onChange={handleFileChange} />
+        </Box>
         {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
 
         {mediaUrl && (
