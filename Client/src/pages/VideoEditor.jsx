@@ -54,6 +54,13 @@ const Trim = () => {
     recordedChunksRef.current = [];
     const media = mediaRef.current;
     const canvas = canvasRef.current;
+
+    if (!canvas) {
+      setError('Canvas element is not available.');
+      setIsProcessing(false);
+      return;
+    }
+
     const ctx = canvas.getContext('2d');
 
     media.currentTime = Number(start);
@@ -214,6 +221,7 @@ const Trim = () => {
           </Box>
         )}
       </Container>
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
     </Box>
   );
 };
