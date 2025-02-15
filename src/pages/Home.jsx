@@ -30,7 +30,7 @@ function Home() {
     <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default, color: theme.palette.text.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
       <Container maxWidth="md" sx={{ textAlign: 'center', p: 2 }}>
         {/* Application Title */}
-        <CustomTypography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
+        <CustomTypography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: theme.palette.primary.main }}>
           Edit Videos Together on a Single Quick Access Website
         </CustomTypography>
 
