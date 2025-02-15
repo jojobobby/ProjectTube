@@ -2,12 +2,20 @@ import React from 'react';
 import { Container, Box, Typography, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Google as GoogleIcon } from '@mui/icons-material';
+import { useUser } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const theme = useTheme();
+  const { setUser } = useUser();
+  const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
     // Implement Google login logic here
+    // For demonstration, we'll just set a dummy user
+    const dummyUser = { name: 'John Doe', email: 'john.doe@example.com' };
+    setUser(dummyUser);
+    navigate('/video-editor');
   };
 
   return (

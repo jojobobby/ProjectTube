@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import AppRouter from './router/router';
+import AppRouter from './router/AppRouter';
 import CustomThemeProvider from './ThemeProvider';
 import './index.css'; // Import the default styles
 

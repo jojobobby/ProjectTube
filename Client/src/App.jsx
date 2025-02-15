@@ -1,30 +1,32 @@
-import React, { useState, useContext, createContext } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import VideoEditor from './pages/VideoEditor';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import React, { useState, useContext, createContext, useEffect } from 'react';
 import CustomThemeProvider from './ThemeProvider';
+import AppRouter from './router/AppRouter';
 
-const UserContext = createContext(null);
+const UserContext = createContext({ user: {}, setUser: () => {} });
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = sessionStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : {};
+  });
+
+  useEffect(() => {
+    if (user) {
+      sessionStorage.setItem('user', JSON.stringify(user));
+    } else {
+      sessionStorage.removeItem('user');
+    }
+  }, [user]);
 
   return (
     <CustomThemeProvider>
       <UserContext.Provider value={{ user, setUser }}>
-        <Router>
-          <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/video-editor" element={user ? <VideoEditor /> : <Navigate to="/login" />} />
-          </Routes>
-          <Footer />
-        </Router>
+        <AppRouter />
       </UserContext.Provider>
     </CustomThemeProvider>
   );
 };
+
+export const useUser = () => useContext(UserContext);
+
+export default App;

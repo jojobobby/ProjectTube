@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Container, Box, Typography, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useColorMode } from '../ThemeProvider';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../App';
 
 const Trim = () => {
   const [videoFile, setVideoFile] = useState(null);
@@ -16,7 +17,14 @@ const Trim = () => {
   const recordedChunksRef = useRef([]);
 
   const theme = useTheme();
-  const colorMode = useColorMode();
+  const navigate = useNavigate();
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];

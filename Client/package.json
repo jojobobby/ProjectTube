@@ -9,6 +9,8 @@
     "@mui/icons-material": "^6.4.2",
     "@mui/material": "^6.4.2",
     "@mui/styled-engine-sc": "^6.4.2",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.2.0",
     "cra-template": "1.2.0",
     "ffmpeg": "^0.0.4",
     "mui": "^0.0.1",
@@ -16,7 +18,8 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",
     "react-scripts": "5.0.1",
-    "styled-components": "^6.1.14"
+    "styled-components": "^6.1.14",
+    "testing-library": "^0.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
