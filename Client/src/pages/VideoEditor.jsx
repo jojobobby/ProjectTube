@@ -1,18 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Container, Box, Typography, Button } from '@mui/material';
+import { Container, Box, Typography, Button, Slider, FormControlLabel, Checkbox, TextField } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../App';
 
 const Trim = () => {
-  const [videoFile, setVideoFile] = useState(null);
-  const [videoUrl, setVideoUrl] = useState('');
+  const [mediaFile, setMediaFile] = useState(null);
+  const [mediaUrl, setMediaUrl] = useState('');
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(0);
   const [trimmedUrl, setTrimmedUrl] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [mute, setMute] = useState(false);
+  const [lowerQuality, setLowerQuality] = useState(false);
+  const [trim, setTrim] = useState(false);
+  const [error, setError] = useState('');
+  const [newFileName, setNewFileName] = useState('trimmed-media');
 
-  const videoRef = useRef(null);
+  const mediaRef = useRef(null);
   const canvasRef = useRef(null);
   const recordedChunksRef = useRef([]);
 
@@ -29,25 +35,32 @@ const Trim = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setVideoFile(file);
-      setVideoUrl(URL.createObjectURL(file));
+      if (file.type !== 'video/mp4') {
+        setError('Only MP4 files are supported for editing.');
+        setMediaFile(null);
+        setMediaUrl('');
+        return;
+      }
+      setError('');
+      setMediaFile(file);
+      setMediaUrl(URL.createObjectURL(file));
     }
   };
 
-  const handleTrim = () => {
-    if (!videoFile) return;
+  const handleFinish = () => {
+    if (!mediaFile) return;
 
     setIsProcessing(true);
     recordedChunksRef.current = [];
-    const video = videoRef.current;
+    const media = mediaRef.current;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
-    video.currentTime = Number(start);
+    media.currentTime = Number(start);
 
-    video.onseeked = () => {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+    media.onseeked = () => {
+      canvas.width = media.videoWidth || 640;
+      canvas.height = media.videoHeight || 480;
 
       const stream = canvas.captureStream(30);
       const options = { mimeType: 'video/webm; codecs=vp9' };
@@ -61,21 +74,21 @@ const Trim = () => {
 
       mediaRecorder.onstop = () => {
         const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-        const newVideoUrl = URL.createObjectURL(blob);
-        setTrimmedUrl(newVideoUrl);
+        const newMediaUrl = URL.createObjectURL(blob);
+        setTrimmedUrl(newMediaUrl);
         setIsProcessing(false);
       };
 
       mediaRecorder.start();
-      video.play();
+      media.play();
 
       const drawFrame = () => {
-        if (video.currentTime >= Number(end)) {
-          video.pause();
+        if (media.currentTime >= Number(end)) {
+          media.pause();
           mediaRecorder.stop();
           return;
         }
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(media, 0, 0, canvas.width, canvas.height);
         requestAnimationFrame(drawFrame);
       };
 
@@ -83,59 +96,120 @@ const Trim = () => {
     };
   };
 
+  const handleLoadedMetadata = () => {
+    const media = mediaRef.current;
+    setDuration(media.duration);
+    setEnd(media.duration);
+  };
+
+  const handleSliderChange = (event, newValue) => {
+    setStart(newValue[0]);
+    setEnd(newValue[1]);
+  };
+
+  const handleMuteChange = (event) => {
+    setMute(event.target.checked);
+  };
+
+  const handleLowerQualityChange = (event) => {
+    setLowerQuality(event.target.checked);
+  };
+
+  const handleTrimChange = (event) => {
+    setTrim(event.target.checked);
+  };
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default, color: theme.palette.text.primary }}>
-      <Container maxWidth="md" sx={{ mt: 4, textAlign: 'center', pb: 0 }}>
+    <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default, color: theme.palette.text.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
+      <Container maxWidth="md" sx={{ textAlign: 'center', p: 2 }}>
         <Typography variant="h4" gutterBottom>
-          Video Uploader & Editor (Using Canvas & MediaRecorder)
+          Media Uploader & Editor (Using Canvas & MediaRecorder)
         </Typography>
-        <input type="file" accept="video/*" onChange={handleFileChange} />
+        <input type="file" accept="video/mp4" onChange={handleFileChange} />
+        {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
 
-        {videoUrl && (
+        {mediaUrl && (
           <>
-            <video
-              ref={videoRef}
-              src={videoUrl}
-              controls
-              style={{ maxWidth: '100%', display: 'none' }}
-            />
-
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="h6">Set Trim Times</Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 2 }}>
-                <label>
-                  Start (seconds):
-                  <input
-                    type="number"
-                    value={start}
-                    onChange={(e) => setStart(e.target.value)}
+            <Box sx={{ mt: 4 }}>
+              <video
+                ref={mediaRef}
+                src={mediaUrl}
+                controls
+                onLoadedMetadata={handleLoadedMetadata}
+                style={{ width: '100%' }}
+              />
+              {trim && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="h6">Set Trim Times</Typography>
+                  <Slider
+                    value={[start, end]}
+                    onChange={handleSliderChange}
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={duration}
+                    sx={{ mt: 2 }}
                   />
-                </label>
-                <label>
-                  End (seconds):
-                  <input
-                    type="number"
-                    value={end}
-                    onChange={(e) => setEnd(e.target.value)}
-                  />
-                </label>
-              </Box>
-              <Button onClick={handleTrim} disabled={isProcessing} variant="contained" color="primary" sx={{ mt: 2 }}>
-                {isProcessing ? 'Processing...' : 'Trim Video'}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                    <TextField
+                      label="Start Time"
+                      value={formatTime(start)}
+                      InputProps={{ readOnly: true }}
+                      variant="outlined"
+                      sx={{ width: '45%' }}
+                    />
+                    <TextField
+                      label="End Time"
+                      value={formatTime(end)}
+                      InputProps={{ readOnly: true }}
+                      variant="outlined"
+                      sx={{ width: '45%' }}
+                    />
+                  </Box>
+                </Box>
+              )}
+            </Box>
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2 }}>
+              <FormControlLabel
+                control={<Checkbox checked={trim} onChange={handleTrimChange} />}
+                label="Trim Media"
+              />
+              <FormControlLabel
+                control={<Checkbox checked={mute} onChange={handleMuteChange} />}
+                label="Mute Media"
+              />
+              <FormControlLabel
+                control={<Checkbox checked={lowerQuality} onChange={handleLowerQualityChange} />}
+                label="Lower Quality"
+              />
+            </Box>
+            <Box sx={{ mt: 4 }}>
+              <TextField
+                label="New File Name"
+                value={newFileName}
+                onChange={(e) => setNewFileName(e.target.value)}
+                variant="outlined"
+                fullWidth
+              />
+              <Button onClick={handleFinish} disabled={isProcessing} variant="contained" color="primary" sx={{ mt: 2 }}>
+                {isProcessing ? 'Processing...' : 'Finish'}
               </Button>
             </Box>
-
-            <canvas ref={canvasRef} style={{ display: 'none' }} />
           </>
         )}
 
         {trimmedUrl && (
           <Box sx={{ mt: 4 }}>
-            <Typography variant="h6">Trimmed Video</Typography>
-            <video src={trimmedUrl} controls style={{ maxWidth: '100%' }} />
+            <Typography variant="h6">Trimmed Media</Typography>
+            <video src={trimmedUrl} controls style={{ width: '100%' }} />
             <br />
-            <Button href={trimmedUrl} download="trimmed-video.webm" variant="contained" color="secondary" sx={{ mt: 2 }}>
-              Download Trimmed Video
+            <Button href={trimmedUrl} download={`${newFileName}.webm`} variant="contained" color="secondary" sx={{ mt: 2 }}>
+              Download Trimmed Media
             </Button>
           </Box>
         )}

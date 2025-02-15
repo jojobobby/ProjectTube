@@ -15,8 +15,8 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ borderBottom: '0.75px solid #e0e0e0' }}>
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
+    <AppBar position="static" sx={{ borderBottom: '0.75px solid #e0e0e0', height: '48px' }}>
+      <Toolbar sx={{ justifyContent: 'space-between', minHeight: '48px !important' }}>
         <Typography variant="h6" sx={{ textAlign: 'left', flexGrow: 1, fontWeight: 'bold' }}>
           <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
             ProjectTube
